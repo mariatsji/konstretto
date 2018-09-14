@@ -37,6 +37,12 @@ should print out "dev.db.org"
 
 ## config file format
 
+* at least one Tag in the form of `[exampletag]`
+* any number of `key=value` under each tag
+* any number of sections consisting of a tag + key=value
+* no comments support at the moment
+
+
 ## runtime properties
 
   The runtime property CONSTRETTO_TAGS is supported, where a comma listed set of tags will be searched from right to left in prioritized

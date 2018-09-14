@@ -45,7 +45,7 @@ import qualified Data.Text                 as T
 import qualified Data.Text.IO              as TIO
 import           System.Environment
 
--- | `readConfig` accepts a filepath to a configuration ini-file and attempts to parse it
+-- | `readConfig` accepts a filepath to a configuration ini-file and attempts to parse it strictly
 readConfig :: FilePath -> IO (Either String Constretto)
 readConfig fp = parse <$> TIO.readFile fp
 

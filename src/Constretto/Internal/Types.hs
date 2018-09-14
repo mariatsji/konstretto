@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE Safe #-}
+{-# LANGUAGE Safe              #-}
 
 {-|
 Module      : Constretto.Internal.Types
@@ -24,6 +24,8 @@ module Constretto.Internal.Types
 
 import qualified Data.Map.Strict    as Map
 import           Data.Maybe
+import           Data.Monoid
+import           Data.Semigroup
 import           Data.String
 import qualified Data.Text          as T
 import           System.Environment
@@ -67,8 +69,9 @@ splitMaybeStrings (Just s) = T.pack <$> splitStringOnComma s
 splitStringOnComma :: String -> [String]
 splitStringOnComma [] = []
 splitStringOnComma (',':xs) = splitStringOnComma xs
-splitStringOnComma s = (takeWhile (/= ',') s) : (splitStringOnComma $ dropWhile (/= ',') s)
-  
+splitStringOnComma s =
+  (takeWhile (/= ',') s) : (splitStringOnComma $ dropWhile (/= ',') s)
+
 insert' :: Tag -> T.Text -> T.Text -> Constretto -> Constretto
 insert' tag' key val (Constretto outer) =
   let k = trim key

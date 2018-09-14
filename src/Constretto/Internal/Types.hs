@@ -24,8 +24,8 @@ module Constretto.Internal.Types
 
 import qualified Data.Map.Strict    as Map
 import           Data.Maybe
-import           Data.Monoid
-import           Data.Semigroup
+import           Data.Monoid        ()
+import           Data.Semigroup     ((<>))
 import           Data.String
 import qualified Data.Text          as T
 import           System.Environment

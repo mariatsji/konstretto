@@ -1,6 +1,6 @@
 # Konstretto
 
-Constretto reads configuration files where each key value is sectioned by tags and key and value separated by `=`
+Konstretto is a haskell library which reads configuration files where each key value is sectioned by tags and key and value separated by `=`
 and is highly inspired by the config file format of the apache constretto library
 
 Example, given a file `/home/haskell/project/configuration.ini` :
@@ -68,3 +68,11 @@ Example, if your application is started with the property TAGS like this
     stack exec --docker-run-args='-e TAGS=prod' -- myapp
 
 The configuration file is searched for the tag [prod]. The property can be comma-separated, and is searched from right to left in descending priority when selecting a key/value.
+
+## Building
+
+    stack build --pedantic
+
+## Running tests
+
+    stack test

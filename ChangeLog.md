@@ -1,3 +1,3 @@
-# Changelog for constretto
+# Changelog for konstretto
 
 ## Unreleased changes

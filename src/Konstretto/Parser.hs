@@ -1,7 +1,7 @@
 {-# LANGUAGE Safe #-}
 
 {-|
-Module      : Constretto.Parser
+Module      : Konstretto.Parser
 Description : Module uses Attoparsec to parse an .ini file
 Copyright   : (c) Sjur Millidahl 2018
 License     : MIT
@@ -9,15 +9,15 @@ Maintainer  : sjur.millidahl@gmail.com
 Stability   : experimental
 Portability : POSIX
 -}
-module Constretto.Parser
-  ( constrettoParser
+module Konstretto.Parser
+  ( konstrettoParser
   , parse
   ) where
 
 import qualified Data.Attoparsec.Text as AT
 import qualified Data.Text            as T
 
-import           Constretto.Internal.Types
+import           Konstretto.Internal.Types
 
 type Keyval = (T.Text, T.Text)
 
@@ -52,15 +52,15 @@ sectionParser' = do
   _ <- AT.many' AT.endOfLine
   return $ Block tag' keyVals
 
-constrettoParser :: AT.Parser Constretto
-constrettoParser = toConstretto <$> AT.many' sectionParser'
+konstrettoParser :: AT.Parser Konstretto
+konstrettoParser = toKonstretto <$> AT.many' sectionParser'
 
-toConstretto :: [Block] -> Constretto
-toConstretto blocks = mconcat $ toConstretto' <$> blocks
+toKonstretto :: [Block] -> Konstretto
+toKonstretto blocks = mconcat $ toKonstretto' <$> blocks
 
-toConstretto' :: Block -> Constretto
-toConstretto' (Block _ []) = emptyConstretto
-toConstretto' (Block t ((k, v):xs)) = insert' t k v $ toConstretto' (Block t xs)
+toKonstretto' :: Block -> Konstretto
+toKonstretto' (Block _ []) = emptyKonstretto
+toKonstretto' (Block t ((k, v):xs)) = insert' t k v $ toKonstretto' (Block t xs)
 
-parse :: T.Text -> Either String Constretto
-parse = AT.parseOnly constrettoParser
+parse :: T.Text -> Either String Konstretto
+parse = AT.parseOnly konstrettoParser

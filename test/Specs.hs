@@ -1,9 +1,9 @@
-import Constretto.ParserSpec
-import Constretto.TypesSpec
-import ConstrettoSpec
+import Konstretto.ParserSpec
+import Konstretto.TypesSpec
+import KonstrettoSpec
 
 main :: IO ()
 main = do
     parserSpecs
     typesSpecs
-    constrettoSpec
+    konstrettoSpec

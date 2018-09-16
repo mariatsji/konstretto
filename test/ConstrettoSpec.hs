@@ -28,18 +28,18 @@ constrettoSpec =
   it "uses missing CONSTRETTO_TAGS runtime property to get the default key" $ do
     cd <- getCurrentDirectory
     let fp = cd ++ "/test/testconstretto.ini"
-    e <- lookupFromEnvAndFile fp "mykey"
+    e <- lookupFromEnvAndFile "CONSTRETTO_TAGS" fp "mykey"
     e `shouldBe` (Right "defaultval")
   it "uses CONSTRETTO_TAGS dev runtime property to get the right key" $ do
     setEnv "CONSTRETTO_TAGS" "dev"
     cd <- getCurrentDirectory
     let fp = cd ++ "/test/testconstretto.ini"
-    e <- lookupFromEnvAndFile fp "mykey"
+    e <- lookupFromEnvAndFile "CONSTRETTO_TAGS" fp "mykey"
     e `shouldBe` (Right "devkey")
   it "uses CONSTRETTO_TAGS dev,prod runtime property to get the right key" $ do
     setEnv "CONSTRETTO_TAGS" "prod,dev"
     cd <- getCurrentDirectory
     let fp = cd ++ "/test/testconstretto.ini"
-    e <- lookupFromEnvAndFile fp "mykey"
+    e <- lookupFromEnvAndFile "CONSTRETTO_TAGS" fp "mykey"
     e `shouldBe` (Right "prodkey")
     

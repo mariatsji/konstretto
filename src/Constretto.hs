@@ -56,15 +56,15 @@ readConfig fp = parse <$> TIO.readFile fp
 lookupC :: [Tag] -> T.Text -> Constretto -> Maybe T.Text
 lookupC = lookup''
 
--- | 'lookupCFromEnv' calls `lookupC` with comma separated `[Tag]` from the system property CONSTRETTO_TAGS
-lookupCFromEnv :: T.Text -> Constretto -> IO (Maybe T.Text)
-lookupCFromEnv key constretto =
-  fmap (\tags -> lookup'' tags key constretto) getTagsFromEnv
+-- | 'lookupCFromEnv' calls `lookupC` with comma separated `[Tag]` from the system property `envKey`
+lookupCFromEnv :: String -> T.Text -> Constretto -> IO (Maybe T.Text)
+lookupCFromEnv envKey key constretto =
+  fmap (\tags -> lookup'' tags key constretto) (getTagsFromEnv envKey)
 
--- | 'lookupFromEnvAndFile' parses a given config file and searches for values given keys and tags from CONSTRETTO_TAGS runtime property
-lookupFromEnvAndFile :: FilePath -> T.Text -> IO (Either String T.Text)
-lookupFromEnvAndFile fp key = do
-  tags <- getTagsFromEnv
+-- | 'lookupFromEnvAndFile' parses a given config file and searches for values given keys and tags from envKey runtime property
+lookupFromEnvAndFile :: String -> FilePath -> T.Text -> IO (Either String T.Text)
+lookupFromEnvAndFile envKey fp key = do
+  tags <- getTagsFromEnv envKey
   lookupFromTagsAndFile fp tags key
 
 -- | 'lookupFromTagsAndFile' parses a given config file and searches for values given keys and tags (searched from right)
@@ -77,10 +77,10 @@ maybeToLeft' (Right Nothing) = Left "cannot find key"
 maybeToLeft' (Right (Just r)) = Right r
 maybeToLeft' (Left e) = Left e
 
-getTagsFromEnv :: IO [Tag]
-getTagsFromEnv =
+getTagsFromEnv :: String -> IO [Tag]
+getTagsFromEnv s =
   maybe [] (fmap tag . T.words . T.pack . commaToSpace) <$>
-  lookupEnv "CONSTRETTO_TAGS"
+  lookupEnv s
 
 commaToSpace :: String -> String
 commaToSpace =

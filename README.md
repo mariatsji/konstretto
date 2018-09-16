@@ -52,7 +52,7 @@ should print out "dev.db.org"
 * any number of `key=value` under each tag
 * any number of sections consisting of a tag + key=value
 * no comments support at the moment
-* a [default] tag is special - it is a default fallback for key/vals. It has the lowest priority when searching using multiple tags.
+* a `[default]` tag is special - it is a default fallback for key/vals. It has the lowest priority when searching using multiple tags.
 
 ## Searching for keys/vals
 
@@ -67,7 +67,7 @@ Example, if your application is started with the property TAGS like this
 
     stack exec --docker-run-args='-e TAGS=prod' -- myapp
 
-The configuration file is searched for the tag [prod]. The property can be comma-separated, and is searched from right to left in descending priority when selecting a key/value.
+The configuration file is searched for the tag `[prod]`. The property can be comma-separated, and is searched from right to left in descending priority when selecting a key/value.
 
 ## Building
 
@@ -76,3 +76,7 @@ The configuration file is searched for the tag [prod]. The property can be comma
 ## Running tests
 
     stack test
+
+## Build haddoc documentation
+
+    stack haddock

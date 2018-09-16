@@ -40,6 +40,7 @@ module Konstretto
   , lookupFromEnvAndFile
   , Tag()
   , Konstretto()
+  , EnvTags
   ) where
 
 import           Konstretto.Internal.Types
@@ -48,21 +49,24 @@ import qualified Data.Text                 as T
 import qualified Data.Text.IO              as TIO
 import           System.Environment
 
+-- | The name of the runtime system property to interpret as a list of tags in descending orders
+type EnvTags = String
+
 -- | `readConfig` accepts a filepath to a configuration ini-file and attempts to parse it strictly
 readConfig :: FilePath -> IO (Either String Konstretto)
 readConfig fp = parse <$> TIO.readFile fp
 
 -- | 'lookupC' accepts `[Tag]` and a key and a configuratin file and give any associated value as a `Data.Text`
-lookupC :: [Tag] -> T.Text -> Konstretto -> Maybe T.Text
-lookupC = lookup''
+lookupC :: Konstretto -> [Tag] -> T.Text -> Maybe T.Text
+lookupC konstretto tags key = lookup'' tags key konstretto
 
 -- | 'lookupCFromEnv' calls `lookupC` with comma separated `[Tag]` from the system property `envKey`
-lookupCFromEnv :: String -> T.Text -> Konstretto -> IO (Maybe T.Text)
-lookupCFromEnv envKey key konstretto =
+lookupCFromEnv :: Konstretto -> EnvTags -> T.Text -> IO (Maybe T.Text)
+lookupCFromEnv konstretto envKey key =
   fmap (\tags -> lookup'' tags key konstretto) (getTagsFromEnv envKey)
 
 -- | 'lookupFromEnvAndFile' parses a given config file and searches for values given keys and tags from envKey runtime property
-lookupFromEnvAndFile :: String -> FilePath -> T.Text -> IO (Either String T.Text)
+lookupFromEnvAndFile :: EnvTags -> FilePath -> T.Text -> IO (Either String T.Text)
 lookupFromEnvAndFile envKey fp key = do
   tags <- getTagsFromEnv envKey
   lookupFromTagsAndFile fp tags key
@@ -70,7 +74,7 @@ lookupFromEnvAndFile envKey fp key = do
 -- | 'lookupFromTagsAndFile' parses a given config file and searches for values given keys and tags (searched from right)
 lookupFromTagsAndFile :: FilePath -> [Tag] -> T.Text -> IO (Either String T.Text)
 lookupFromTagsAndFile fp tags key =
-  fmap maybeToLeft' $ fmap (lookupC tags key) <$> readConfig fp
+  fmap maybeToLeft' $ fmap (\kon -> lookupC kon tags key) <$> readConfig fp
   
 maybeToLeft' :: Either String (Maybe T.Text) -> Either String T.Text
 maybeToLeft' (Right Nothing) = Left "cannot find key"

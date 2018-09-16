@@ -36,7 +36,10 @@ module Constretto
   ( readConfig
   , lookupC
   , lookupCFromEnv
+  , lookupFromTagsAndFile
+  , lookupFromEnvAndFile
   , Tag()
+  , Constretto()
   ) where
 
 import           Constretto.Internal.Types
@@ -55,23 +58,34 @@ lookupC = lookup''
 
 -- | 'lookupCFromEnv' calls `lookupC` with comma separated `[Tag]` from the system property CONSTRETTO_TAGS
 lookupCFromEnv :: T.Text -> Constretto -> IO (Maybe T.Text)
-lookupCFromEnv key constretto = do
+lookupCFromEnv key constretto =
+  fmap (\tags -> lookup'' tags key constretto) getTagsFromEnv
+
+-- | 'lookupFromEnvAndFile' parses a given config file and searches for values given keys and tags from CONSTRETTO_TAGS runtime property
+lookupFromEnvAndFile :: FilePath -> T.Text -> IO (Either String T.Text)
+lookupFromEnvAndFile fp key = do
   tags <- getTagsFromEnv
-  pure $ lookup'' tags key constretto
+  lookupFromTagsAndFile fp tags key
+
+-- | 'lookupFromTagsAndFile' parses a given config file and searches for values given keys and tags (searched from right)
+lookupFromTagsAndFile :: FilePath -> [Tag] -> T.Text -> IO (Either String T.Text)
+lookupFromTagsAndFile fp tags key =
+  fmap maybeToLeft' $ fmap (lookupC tags key) <$> readConfig fp
+  
+maybeToLeft' :: Either String (Maybe T.Text) -> Either String T.Text
+maybeToLeft' (Right Nothing) = Left "cannot find key"
+maybeToLeft' (Right (Just r)) = Right r
+maybeToLeft' (Left e) = Left e
 
 getTagsFromEnv :: IO [Tag]
-getTagsFromEnv = do
-  asString <- lookupEnv "CONSTRETTO_TAGS"
-  case asString of
-    Nothing -> pure []
-    Just s -> do
-      let asText =
-            T.pack $
-            fmap
-              (\c ->
-                 if c == ','
-                   then ' '
-                   else c)
-              s
-          tags = tag <$> T.words asText
-      pure tags
+getTagsFromEnv =
+  maybe [] (fmap tag . T.words . T.pack . commaToSpace) <$>
+  lookupEnv "CONSTRETTO_TAGS"
+
+commaToSpace :: String -> String
+commaToSpace =
+  fmap
+    (\c ->
+       if c == ','
+         then ' '
+         else c)
